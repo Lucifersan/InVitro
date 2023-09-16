@@ -12,6 +12,14 @@ from scipy.spatial import distance as dist
 from eyeware.client import TrackerClient
 import multiprocessing as mp
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+#uwu
+
+=======
+>>>>>>> 4c8b8c9addfcc2959ecef57ba22fd95c4ef8efe5
+>>>>>>> Stashed changes
 import params
 
 def start_blink_loop():
