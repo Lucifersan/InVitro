@@ -14,6 +14,16 @@ import eye
 # sprites
 import sprites
 
+def gaze_info_wrapper(level):
+    screen_gaze = eye.pull_gaze_info()
+    if screen_gaze is None:
+        return None
+    screen_info = pygame.display.Info()
+    print(screen_info.current_w, screen_info.current_h)
+    # / screen_info.current_w * params.SCREEN_WIDTH
+    # / screen_info.current_h * params.SCREEN_HEIGHT
+    return (screen_gaze.x + level.camera_x, screen_gaze.y + level.camera_y)
+
 def play(level):
     running = True
     while running:
@@ -26,7 +36,7 @@ def play(level):
                     # q_in.put('STOP')
                     sys.exit()
         level.screen.fill((255,255,255))
-        level.tick(eye.pull_blink_state(), eye.pull_gaze_info())
+        level.tick(eye.pull_blink_state(), gaze_info_wrapper(level))
         pygame.display.flip()
         clock.tick(60)
 

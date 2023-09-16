@@ -54,6 +54,8 @@ class Scene:
         for sprite in self.sprites:
             if self.show[self.state][sprite]:
                 self.screen.blit(sprite.get_image(), sprite.rect.move(-self.camera_x, -self.camera_y))
+        # if self.screen_gaze is not None:
+        #     pygame.draw.circle(self.screen, (0, 200, 0), (self.screen_gaze[0] - self.camera_x, self.screen_gaze[1] - self.camera_y), 300)
                 
     def update_camera_pos(self) -> None:
         """
@@ -84,6 +86,7 @@ class Scene:
         self.give_blink(blink_data)
         self.give_gaze(screen_gaze)
         self.update_camera_pos()
+        self.screen_gaze = screen_gaze
         self.burst()
         self.ticks += 1
 

@@ -17,8 +17,11 @@ class L0(scene.Scene):
 
         self.sprites = [sprites.Player("player", self, 
                             sprites.frame_load_helper("player", ["real", "dream"], ["still", "walk", "jump"]), "real", "still"),
-                        sprites.CollidableSprite("collidable", self,
-                            sprites.frame_load_helper("collidable", ["real", "dream"], [""]), "real", "", width=160, height=160, x = params.SCREEN_HEIGHT - 160, y = params.CENTER_WIDTH)]
+                        sprites.CollidableSprite("stationary", self,
+                            sprites.frame_load_helper("stationary", ["real", "dream"], [""]), "real", "", x = 1000, y = params.SCREEN_HEIGHT - 100), 
+                        sprites.EyeMovableSprite("eyemovable", self,
+                            sprites.frame_load_helper("eyemovable", ["real", "dream"], [""]), "real", "", x = 1800, y = params.SCREEN_HEIGHT - 600, 
+                                start_coords=(1800, params.SCREEN_HEIGHT - 600), finish_coords=(1800, params.SCREEN_HEIGHT - 0), eye_focus=(150, 150))]
         
         # Get background images
         self.backgrounds = [sprites.FlippableSprite("background", self, 
