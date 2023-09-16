@@ -11,6 +11,7 @@ from imutils.video import FileVideoStream, VideoStream
 from scipy.spatial import distance as dist
 from eyeware.client import TrackerClient
 import multiprocessing as mp
+# import pygame
 
 import params
 
@@ -89,6 +90,8 @@ def eye_state_loop(detector, predictor, lStart, lEnd, rStart, rEnd):
     #fileStream = True
     vs = VideoStream(src=0).start()
     #fileStream = False
+
+    # pygame.quit()
 
     while True:
         frame = vs.read()
