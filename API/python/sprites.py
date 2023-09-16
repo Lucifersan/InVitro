@@ -38,6 +38,7 @@ class FlippableSprite(pygame.sprite.Sprite):
 
         each value itself is a map from states to frame pointers
         """
+        self.exists = {"real" : True, "dream" : True} # When to render this
         super().__init__()
         self.scene = scene
         self.name = name
@@ -46,6 +47,7 @@ class FlippableSprite(pygame.sprite.Sprite):
         self.world_state = world_state
         self.obj_state = obj_state
         self.zero_frame_pointer()
+        print(self, self.frames)
         self.rect = self.get_image().get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -54,6 +56,7 @@ class FlippableSprite(pygame.sprite.Sprite):
         """
         Inputs a state, real or dream, and outputs the current image
         """
+        assert self.exists[self.world_state]
         return self.frames[self.world_state][self.obj_state][self.frame_pointer]
     
     def zero_frame_pointer(self):
@@ -131,12 +134,12 @@ class Player(FlippableSprite):
         self.rect.y += self.y_speed
 
         # Apply gravity
-        if self.rect.y < params.SCREEN_HEIGHT - self.rect.height:
-            self.y_speed += 1
-        else:
+        self.y_speed += 1
+
+        if self.rect.y > params.SCREEN_HEIGHT - self.rect.height:
             self.y_speed = 0
             self.jumping = False
-            self.rect.y = params.SCREEN_HEIGHT - self.rect.height
+            self.rect.y = min(self.rect.y, params.SCREEN_HEIGHT - self.rect.height)
         if self.jumping:
             self.flip_obj_state("jump")
         else:
@@ -145,6 +148,30 @@ class Player(FlippableSprite):
             else:
                 self.flip_obj_state("walk")
         super().update(flip, blink_data, screen_gaze)
+
+
+class CollidableSprite(FlippableSprite):
+    def __init__(self, name, scene, frames, world_state, obj_state, width, height, x, y, tick_delay = 5):
+        """
+        A flippable sprite that allows for collisions.
+        """
+        super().__init__(name, scene, frames, world_state, obj_state, tick_delay, x, y)
+        self.width = width
+        self.height = height
+
+    def push(self, sprite):
+        """
+        Push sprite away. Sprite should be a player
+        """
+        assert isinstance(sprite, Player)
+        if self.rect.colliderect(sprite.rect):
+            sprite.rect.move_ip(-sprite.x_speed, -sprite.y_speed)
+            if sprite.y_speed > 0:
+                sprite.rect.y = self.rect.top - sprite.rect.height
+                sprite.jumping = False
+            elif sprite.y_speed < 0:
+                sprite.rect.y = self.rect.bottom
+            sprite.y_speed = 0
 
 
 

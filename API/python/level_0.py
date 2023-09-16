@@ -16,7 +16,9 @@ class L0(scene.Scene):
         # The first sprite in the list is special, and the camera will follow it.
 
         self.sprites = [sprites.Player("player", self, 
-                            sprites.frame_load_helper("player", ["real", "dream"], ["still", "walk", "jump"]), "real", "still")]
+                            sprites.frame_load_helper("player", ["real", "dream"], ["still", "walk", "jump"]), "real", "still"),
+                        sprites.CollidableSprite("collidable", self,
+                            sprites.frame_load_helper("collidable", ["real", "dream"], [""]), "real", "", width=160, height=160, x = params.SCREEN_HEIGHT - 160, y = params.CENTER_WIDTH)]
         
         # Get background images
         self.backgrounds = [sprites.FlippableSprite("background", self, 
@@ -43,7 +45,7 @@ class L0(scene.Scene):
         camera_tx = self.sprites[0].rect.centerx - params.CENTER_WIDTH
         camera_ty = self.sprites[0].rect.centery - params.CENTER_HEIGHT
         self.camera_x = 0.9 * self.camera_x + 0.1 * camera_tx
-        self.camera_y = 0.9 * self.camera_y + 0.1 * camera_ty
+        self.camera_y = min(0.1 * params.SCREEN_HEIGHT, 0.9 * self.camera_y + 0.1 * camera_ty)
 
     def tick(self, blink_data, screen_gaze):
         """
@@ -59,6 +61,8 @@ class L0(scene.Scene):
                 self.state = "real"
         for sprite in self.sprites:
             sprite.update(self.state, blink_data, screen_gaze)
+            if isinstance(sprite, sprites.CollidableSprite):
+                sprite.push(self.sprites[0])
         super().tick(blink_data, screen_gaze)
 
     def is_done(self) -> bool:
