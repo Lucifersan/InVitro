@@ -31,7 +31,7 @@ class FlippableSprite(pygame.sprite.Sprite):
     """
     A sprite that changes between the two worlds.
     """
-    def __init__(self, name, scene, frames, world_state, obj_state, tick_delay = 5, x = 0, y = 0):
+    def __init__(self, name, scene, frames, world_state, obj_state, x = 0, y = 0, tick_delay = 5):
         """
         Frames is a mapping from "real" to a list of frames
         and "dream" to a list of frames
@@ -91,9 +91,9 @@ class Player(FlippableSprite):
     """
     Player sprite
     """
-    def __init__(self, name, scene, frames, world_state, obj_state, tick_delay = 5, x = 0, y = 0):
+    def __init__(self, name, scene, frames, world_state, obj_state, x = 0, y = 0, tick_delay = 5):
         self.last_direction = "right"  # Initialize last direction as right
-        super().__init__(name, scene, frames, world_state, obj_state, tick_delay, x, y)
+        super().__init__(name, scene, frames, world_state, obj_state, x, y, tick_delay)
         self.x_speed = 0
         self.y_speed = 0
         self.jump_power = -20
@@ -146,7 +146,6 @@ class Player(FlippableSprite):
             self.jumping = False
             self.rect.y = min(self.rect.y, params.SCREEN_HEIGHT - self.rect.height)
 
-        print(self.rect.y, self.jumping, self.y_speed)
         if self.jumping:
             self.flip_obj_state("jump")
         else:
@@ -157,13 +156,12 @@ class Player(FlippableSprite):
 
         super().update(flip, blink_data, screen_gaze)
 
-
 class CollidableSprite(FlippableSprite):
-    def __init__(self, name, scene, frames, world_state, obj_state, width, height, x, y, tick_delay = 5):
+    def __init__(self, name, scene, frames, world_state, obj_state, x, y, tick_delay = 5):
         """
         A flippable sprite that allows for collisions.
         """
-        super().__init__(name, scene, frames, world_state, obj_state, tick_delay, x, y)
+        super().__init__(name, scene, frames, world_state, obj_state, x, y, tick_delay)
 
     def rectify_x(self, sprite):
         # Fix x
@@ -220,42 +218,34 @@ class CollidableSprite(FlippableSprite):
                     else:
                         self.rectify_y(sprite)
                         self.rectify_x(sprite)
-
-
-class Platform(pygame.sprite.Sprite):
-    def __init__(self, name, position, length=1):
-        super().__init__()
-        self.length = length
-        raw_image = pygame.image.load(os.path.join('images', f"{name}.png"))  # Load animation frames
-        self.image = pygame.transform.scale(raw_image, (raw_image.get_width() * .5, raw_image.get_height() * .5))  # Enlarge by 4 times
-        
-        self.rect = self.image.get_rect()
-        self.rect.x = position[0]
-        self.rect.y = position[1]
-        self.frame_index = 0
     
+class EyeMovableSprite(CollidableSprite):
+    def __init__(self, name, scene, frames, world_state, obj_state, x, y, start_coords, finish_coords, eye_focus, ticks_to_complete = 200, distance_threshold = 90000, tick_delay = 5):
+        super().__init__(name, scene, frames, world_state, obj_state, x, y, tick_delay)
+        self.start_coords = start_coords
+        self.finish_coords = finish_coords
+        self.eye_focus = eye_focus
+        self.ticks_to_complete = ticks_to_complete
+        self.distance_threshold = distance_threshold
+        self.counter = 0
+    
+    def distance_squared_to_gaze(self, screen_gaze):
+        dx = self.rect.x + self.eye_focus[0] - screen_gaze[0]
+        dy = self.rect.y + self.eye_focus[1] - screen_gaze[1]
+        return dx * dx + dy * dy
 
-class EyeSensObject(pygame.sprite.Sprite):
-    def __init__(self, name, frames, position):
-        super().__init__()
-        self.images = []  # List to store animation frames
-        for i in range(frames):  
-            image = pygame.image.load(
-                os.path.join('images', f"{name}{i + 1}.png"))  # Load animation frames
-            image = pygame.transform.scale(image, (image.get_width() * 4, image.get_height() * 4))  # Enlarge by 4 times
-            self.images.append(image)
-        
-        self.image = self.images[0]
-        self.rect = self.image.get_rect()
-        self.rect.x = position[0]
-        self.rect.y = position[1]
-        self.frame_index = 0
-        self.animation_speed = 300  # Milliseconds per frame
-        self.last_update = pygame.time.get_ticks()
+    def update(self, flip, blink_data, screen_gaze):
+        if screen_gaze is not None and (self.distance_squared_to_gaze(screen_gaze) < self.distance_threshold):
+            self.counter += 1
+        else:
+            self.counter -= 4
 
-    def update(self):
-        now = pygame.time.get_ticks()
-        if now - self.last_update > self.animation_speed:
-            self.last_update = now
-            self.frame_index = (self.frame_index + 1) % len(self.images)
-            self.image = self.images[self.frame_index]
+        self.counter = max(self.counter, 0)
+        self.counter = min(self.counter, self.ticks_to_complete)
+
+        self.rect.x = self.start_coords[0] + (self.finish_coords[0] - self.start_coords[0]) * self.counter / self.ticks_to_complete
+        self.rect.y = self.start_coords[1] + (self.finish_coords[1] - self.start_coords[1]) * self.counter / self.ticks_to_complete
+
+        print(self.rect.x, self.rect.y)
+
+        super().update(flip, blink_data, screen_gaze)
