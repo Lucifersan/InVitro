@@ -96,7 +96,7 @@ class Player(FlippableSprite):
         super().__init__(name, scene, frames, world_state, obj_state, tick_delay, x, y)
         self.x_speed = 0
         self.y_speed = 0
-        self.jump_power = -30
+        self.jump_power = -20
         self.jumping = False
         print("Made a player", self.last_direction)
     
@@ -113,6 +113,9 @@ class Player(FlippableSprite):
         
     def update(self, flip, blink_data, screen_gaze):
 
+        if self.y_speed != 0:
+            self.jumping = True
+
         # Handle movement
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
@@ -128,18 +131,22 @@ class Player(FlippableSprite):
         if keys[pygame.K_SPACE] and not self.jumping:
             self.y_speed = self.jump_power
             self.jumping = True
+            self.jump_start_tick = self.scene.ticks
+
+        # Apply gravity
+        if not (keys[pygame.K_SPACE] and self.jumping and self.scene.ticks - self.jump_start_tick < 10):
+            self.y_speed += 1
 
         # Update position
         self.rect.x += self.x_speed
         self.rect.y += self.y_speed
 
-        # Apply gravity
-        self.y_speed += 1
-
         if self.rect.y > params.SCREEN_HEIGHT - self.rect.height:
             self.y_speed = 0
             self.jumping = False
             self.rect.y = min(self.rect.y, params.SCREEN_HEIGHT - self.rect.height)
+
+        print(self.rect.y, self.jumping, self.y_speed)
         if self.jumping:
             self.flip_obj_state("jump")
         else:
@@ -147,6 +154,7 @@ class Player(FlippableSprite):
                 self.flip_obj_state("still")
             else:
                 self.flip_obj_state("walk")
+
         super().update(flip, blink_data, screen_gaze)
 
 
@@ -156,24 +164,62 @@ class CollidableSprite(FlippableSprite):
         A flippable sprite that allows for collisions.
         """
         super().__init__(name, scene, frames, world_state, obj_state, tick_delay, x, y)
-        self.width = width
-        self.height = height
+
+    def rectify_x(self, sprite):
+        # Fix x
+        if self.rect.colliderect(sprite.rect):
+            sprite.rect.move_ip(-sprite.x_speed, 0)
+            if sprite.rect.centerx < self.rect.centerx:
+                sprite.rect.x = self.rect.left - sprite.rect.width
+            else:
+                sprite.rect.x = self.rect.right
+            sprite.x_speed = 0
+
+    def rectify_y(self, sprite):
+        # Fix y
+        if self.rect.colliderect(sprite.rect):
+            sprite.rect.move_ip(0, -sprite.y_speed)
+            if sprite.rect.centery < self.rect.centery:
+                sprite.rect.y = self.rect.top - sprite.rect.height
+                sprite.jumping = False
+            else:
+                sprite.rect.y = self.rect.bottom
+            sprite.y_speed = 0
 
     def push(self, sprite):
         """
         Push sprite away. Sprite should be a player
         """
         assert isinstance(sprite, Player)
-        if self.rect.colliderect(sprite.rect):
-            sprite.rect.move_ip(-sprite.x_speed, -sprite.y_speed)
-            if sprite.y_speed > 0:
-                sprite.rect.y = self.rect.top - sprite.rect.height
-                sprite.jumping = False
-            elif sprite.y_speed < 0:
-                sprite.rect.y = self.rect.bottom
-            sprite.y_speed = 0
+        
+        if not self.rect.colliderect(sprite.rect):
+            return
+        
+        # midtop, midleft, midbottom, midright 
+        if self.rect.collidepoint(sprite.rect.midtop) or self.rect.collidepoint(sprite.rect.midbottom):
+            # TOO HIGH
+            # FUCK     
+            self.rectify_y(sprite)
+            self.rectify_x(sprite)
 
+        elif self.rect.collidepoint(sprite.rect.midleft) or self.rect.collidepoint(sprite.rect.midright):
+            # NO
+            self.rectify_x(sprite)
+            self.rectify_y(sprite)
 
+        else:
+            for point in [sprite.rect.topleft, sprite.rect.topright, sprite.rect.bottomleft, sprite.rect.bottomright]:
+                if self.rect.collidepoint(point):
+                    dx = point[0] - self.rect.centerx
+                    dy = point[1] - self.rect.centery
+                    sx = abs(dx) * self.rect.height
+                    sy = abs(dy) * self.rect.width
+                    if sx >= sy:
+                        self.rectify_x(sprite)
+                        self.rectify_y(sprite)
+                    else:
+                        self.rectify_y(sprite)
+                        self.rectify_x(sprite)
 
 
 class Platform(pygame.sprite.Sprite):
