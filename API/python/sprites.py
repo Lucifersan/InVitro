@@ -31,7 +31,16 @@ class FlippableSprite(pygame.sprite.Sprite):
     """
     A sprite that changes between the two worlds.
     """
-    def __init__(self, name, scene, frames, world_state, obj_state, x = 0, y = 0, tick_delay = 5):
+    
+    def distance_squared_to_gaze(self, screen_gaze):
+        dx = self.rect.x + self.eye_focus[0] - screen_gaze[0]
+        dy = self.rect.y + self.eye_focus[1] - screen_gaze[1]
+        return dx * dx + dy * dy
+    
+    def is_looked_at(self, screen_gaze):
+        return screen_gaze is not None and ((self.distance_squared_to_gaze(screen_gaze) < self.distance_threshold) ^ self.reverse)
+        
+    def __init__(self, name, scene, frames, world_state, obj_state, x = 0, y = 0, tick_delay = 5, animate_on_sight = False, eye_focus = (0,0), distance_threshold = 90000):
         """
         Frames is a mapping from "real" to a list of frames
         and "dream" to a list of frames
@@ -51,6 +60,10 @@ class FlippableSprite(pygame.sprite.Sprite):
         self.rect = self.get_image().get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.animate_on_sight = animate_on_sight # Fuck it, you can only set this one manually
+        self.reverse = False
+        self.eye_focus = eye_focus
+        self.distance_threshold = distance_threshold
     
     def get_image(self):
         """
@@ -83,7 +96,7 @@ class FlippableSprite(pygame.sprite.Sprite):
         Update the sprite
         """
         self.flip_world_state(world_state)
-        if self.scene.ticks % self.tick_delay == 0:
+        if self.scene.ticks % self.tick_delay == 0 and (not self.animate_on_sight or self.is_looked_at(screen_gaze)):
             animation_frames = len(self.frames[self.world_state][self.obj_state])
             self.frame_pointer = (1 + self.frame_pointer) % animation_frames
 
@@ -230,14 +243,9 @@ class EyeMovableSprite(CollidableSprite):
         self.distance_threshold = distance_threshold
         self.counter = 0
         self.reverse = reverse
-    
-    def distance_squared_to_gaze(self, screen_gaze):
-        dx = self.rect.x + self.eye_focus[0] - screen_gaze[0]
-        dy = self.rect.y + self.eye_focus[1] - screen_gaze[1]
-        return dx * dx + dy * dy
 
     def update(self, flip, blink_data, screen_gaze):
-        if screen_gaze is not None and ((self.distance_squared_to_gaze(screen_gaze) < self.distance_threshold) ^ self.reverse):
+        if self.is_looked_at(screen_gaze):
             self.counter += 1
         else:
             self.counter -= 4
