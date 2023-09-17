@@ -24,13 +24,9 @@ class L1(scene.Scene):
                             sprites.frame_load_helper("stationary", ["real", "dream"], [""]), "real", "", x = 600, y = params.SCREEN_HEIGHT - 100),
                         sprites.CollidableSprite("stationary", self,
                             sprites.frame_load_helper("stationary", ["real", "dream"], [""]), "real", "", x = 300, y = params.SCREEN_HEIGHT - 50), 
-                        sprites.EyeMovableSprite("eyemovable", self,
-                            sprites.frame_load_helper("eyemovable", ["real", "dream"], [""]), "real", "", x = 1800, y = params.SCREEN_HEIGHT - 600, 
-                                start_coords=(1800, params.SCREEN_HEIGHT - 600), finish_coords=(1800, params.SCREEN_HEIGHT - 0), eye_focus=(150, 150)),
-                        sprites.CollidableSprite("stationary", self,
-                            sprites.frame_load_helper("stationary", ["real", "dream"], [""]), "real", "", x = 2500, y = params.SCREEN_HEIGHT - 100), 
-                        sprites.CollidableSprite("stationary", self,
-                            sprites.frame_load_helper("stationary", ["real", "dream"], [""]), "real", "", x = 2900, y = params.SCREEN_HEIGHT - 200), 
+                        sprites.EyeMovableSprite("stone", self,
+                            sprites.frame_load_helper("stone", ["real", "dream"], ["stuck", "alt"], scaling =20), "real", "stuck", x = 2400, y = params.SCREEN_HEIGHT - 700,
+                            start_coords=(2400, params.SCREEN_HEIGHT - 700), finish_coords=(2400, 0), reverse=False, eye_focus=(150, 150), alt_world="dream"),
                         sprites.CollidableSprite("stationary", self,
                             sprites.frame_load_helper("stationary", ["real", "dream"], [""]), "real", "", x = 3300, y = params.SCREEN_HEIGHT - 300), 
                         sprites.EyeMovableSprite("eyemovable", self,    
@@ -58,8 +54,6 @@ class L1(scene.Scene):
                             sprites.frame_load_helper("floor", ["real", "dream"], [""]), "real", "", x=5760, y=params.SCREEN_HEIGHT - 8),
                         sprites.FlippableSprite("paintbrush", self,
                             sprites.frame_load_helper("paintbrush", ["real", "dream"], [""]), "real", "", x=4200, y = params.SCREEN_HEIGHT - 600), 
-                        sprites.CollidableSprite("stone", self,
-                            sprites.frame_load_helper("stone", ["real", "dream"], [""], scaling =10), "real", "", x = 1200, y = params.SCREEN_HEIGHT - 180),
                         sprites.FlippableSprite("clouds", self,
                             sprites.frame_load_helper("clouds", ["real", "dream"], [""], scaling=6), "real", "", x = 800, y = 0),
                         ]
@@ -122,7 +116,7 @@ class L1(scene.Scene):
         #self.screen.blit(s, (0,0)) 
 
 
-    def tick(self, blink_data, screen_gaze):
+    def tick(self, blink_data, screen_gaze, world_state):
         """
         To be overridden.
         Perform one game tick.
@@ -136,7 +130,11 @@ class L1(scene.Scene):
             else:
                 self.state = "real"
         for sprite in self.sprites:
-            sprite.update(self.state, blink_data, screen_gaze)
+            if isinstance(sprite, sprites.EyeMovableSprite):
+                sprite.update(self.state, blink_data, screen_gaze, world_state)
+            else:
+                sprite.update(self.state, blink_data, screen_gaze)
+
             if isinstance(sprite, sprites.CollidableSprite):
                 sprite.push(self.sprites[0])
         # pulse the paintbrush

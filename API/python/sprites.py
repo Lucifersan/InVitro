@@ -170,6 +170,7 @@ class Player(FlippableSprite):
 
         super().update(flip, blink_data, screen_gaze)
 
+
 class CollidableSprite(FlippableSprite):
     def __init__(self, name, scene, frames, world_state, obj_state, x, y, tick_delay = 5):
         """
@@ -233,9 +234,13 @@ class CollidableSprite(FlippableSprite):
                         self.rectify_y(sprite)
                         self.rectify_x(sprite)
     
+
 class EyeMovableSprite(CollidableSprite):
-    def __init__(self, name, scene, frames, world_state, obj_state, x, y, start_coords, finish_coords, eye_focus, ticks_to_complete = 200, distance_threshold = 90000, reverse = False, tick_delay = 5):
+    def __init__(self, name, scene, frames, world_state, obj_state, x, y, start_coords, finish_coords, eye_focus, ticks_to_complete = 200, distance_threshold = 90000, reverse = False, tick_delay = 5, alt_world=None):
         super().__init__(name, scene, frames, world_state, obj_state, x, y, tick_delay)
+        print(self.world_state)
+        print(self.frames)
+        self.zero_frame_pointer()
         self.start_coords = start_coords
         self.finish_coords = finish_coords
         self.eye_focus = eye_focus
@@ -243,19 +248,43 @@ class EyeMovableSprite(CollidableSprite):
         self.distance_threshold = distance_threshold
         self.counter = 0
         self.reverse = reverse
+        self.alt_world = alt_world # if not None, then sprite must be moved in different world
 
-    def update(self, flip, blink_data, screen_gaze):
-        if self.is_looked_at(screen_gaze):
-            self.counter += 1
+    def update(self, flip, blink_data, screen_gaze, world_state):
+        self.flip_world_state(world_state)
+        
+        if self.alt_world is None:
+            if self.is_looked_at(screen_gaze):
+                self.counter += 1
+            else:
+                self.counter -= 4
+
+            self.counter = max(self.counter, 0)
+            self.counter = min(self.counter, self.ticks_to_complete)
+
+            self.rect.x = self.start_coords[0] + (self.finish_coords[0] - self.start_coords[0]) * self.counter / self.ticks_to_complete
+            self.rect.y = self.start_coords[1] + (self.finish_coords[1] - self.start_coords[1]) * self.counter / self.ticks_to_complete
+
+            print(self.rect.x, self.rect.y)
+
+            super().update(flip, blink_data, screen_gaze)
+
+        elif world_state == self.alt_world:
+            self.flip_obj_state("alt") # "stuck" or "alt"; if in alt_world (world it can move in), should switch to "alt"
+            if self.is_looked_at(screen_gaze):
+                self.counter += 1
+            else:
+                self.counter -= 4
+
+            self.counter = max(self.counter, 0)
+            self.counter = min(self.counter, self.ticks_to_complete)
+
+            self.rect.x = self.start_coords[0] + (self.finish_coords[0] - self.start_coords[0]) * self.counter / self.ticks_to_complete
+            self.rect.y = self.start_coords[1] + (self.finish_coords[1] - self.start_coords[1]) * self.counter / self.ticks_to_complete
+
+            print(self.rect.x, self.rect.y)
+
+            super().update(flip, blink_data, screen_gaze)
+
         else:
-            self.counter -= 4
-
-        self.counter = max(self.counter, 0)
-        self.counter = min(self.counter, self.ticks_to_complete)
-
-        self.rect.x = self.start_coords[0] + (self.finish_coords[0] - self.start_coords[0]) * self.counter / self.ticks_to_complete
-        self.rect.y = self.start_coords[1] + (self.finish_coords[1] - self.start_coords[1]) * self.counter / self.ticks_to_complete
-
-        print(self.rect.x, self.rect.y)
-
-        super().update(flip, blink_data, screen_gaze)
+            self.flip_obj_state("stuck")
