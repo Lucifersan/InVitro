@@ -68,39 +68,39 @@ class S0(scene.Scene):
         """
         Godawful code for switching frames
         """
-        if self.ticks >= 0 and self.ticks < 200:
+        if self.ticks >= 0 and self.ticks < 280:
             self.show["real"][self.sprites[0]] = True
-            self.scaling["real"][self.sprites[0]] = 1 + ((200 - self.ticks) / 300) ** 2
-        elif self.ticks >= 200 and self.ticks < 300:
+            self.scaling["real"][self.sprites[0]] = 1 + ((280 - self.ticks) / 280) ** 2
+        elif self.ticks >= 280 and self.ticks < 400:
             self.show["real"][self.sprites[1]] = True
             self.show["real"][self.sprites[0]] = False
-            self.scaling["real"][self.sprites[1]] = 1 + ((500 - self.ticks) / 700) ** 2
-        elif self.ticks >= 300 and self.ticks < 500:
+            self.scaling["real"][self.sprites[1]] = 1 + ((400 - self.ticks) / 700) ** 2
+        elif self.ticks >= 400 and self.ticks < 525:
             self.show["real"][self.sprites[2]] = True
             self.show["real"][self.sprites[1]] = False
             self.scaling["real"][self.sprites[2]] = 1 + ((500 - self.ticks) / 700) ** 2
-        elif self.ticks >= 500 and self.ticks < 700:
+        elif self.ticks >= 525 and self.ticks < 650:
             self.show["real"][self.sprites[3]] = True
             self.show["real"][self.sprites[2]] = False
-            self.scaling["real"][self.sprites[3]] = 1 + ((750 - self.ticks) / 300) ** 2
-        elif self.ticks >= 700 and self.ticks < 750:
+            self.scaling["real"][self.sprites[3]] = 1 + ((700 - self.ticks) / 700) ** 2
+        elif self.ticks >= 650 and self.ticks < 720:
             self.show["real"][self.sprites[4]] = True
             self.show["real"][self.sprites[3]] = False
             self.scaling["real"][self.sprites[4]] = 1 + ((750 - self.ticks) / 300) ** 2
-        elif self.ticks >= 750 and self.ticks < 800:
+        elif self.ticks >= 720 and self.ticks < 777:
             self.show["real"][self.sprites[5]] = True
             self.show["real"][self.sprites[4]] = False
-        elif self.ticks >= 800 and self.ticks < 900:
+        elif self.ticks >= 777 and self.ticks < 1020:
             self.show["real"][self.sprites[6]] = True
             self.show["real"][self.sprites[5]] = False
-        elif self.ticks >= 900 and self.ticks < 1000:
+        elif self.ticks >= 1020 and self.ticks < 1170:
             self.show["real"][self.sprites[7]] = True
             self.show["real"][self.sprites[6]] = False
-        elif self.ticks >= 1000 and self.ticks < 1100:
+        elif self.ticks >= 1170 and self.ticks < 1200:
             self.show["real"][self.sprites[8]] = True
             self.show["real"][self.sprites[7]] = False
             self.scaling["real"][self.sprites[8]] = 1 + ((1250 - self.ticks) / 400) ** 2
-        elif self.ticks >= 1100 and self.ticks < 1200:
+        elif self.ticks >= 1200 and self.ticks < 1200:
             self.show["real"][self.sprites[8]] = True
             self.show["real"][self.sprites[7]] = False
             self.scaling["real"][self.sprites[8]] = 1 + ((1250 - self.ticks) / 400) ** 2
@@ -113,7 +113,7 @@ class S0(scene.Scene):
         # example fade in effect
         self.color = (255, 255, 255)
         self.alpha = 0
-        for transition_tick in [200, 300, 500, 800, 1250]:
+        for transition_tick in [280, 400, 525, 780, 1275]:
             if transition_tick - 30 <= self.ticks and self.ticks < transition_tick:
                 self.alpha = (self.ticks - (transition_tick - 30)) * 256 / 30
 

@@ -43,6 +43,25 @@ def play(level):
             running = False
         clock.tick(60)
 
+def cutscene_play(level):
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q: # hit q to close pygame
+                    running = False
+                    # q_in.put('STOP')
+                    pygame.quit()
+                    sys.exit()
+        level.screen.fill((255,255,255))
+        level.tick(None, None)
+        pygame.display.flip()
+        if level.is_done():
+            running = False
+        clock.tick(60)
+
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument("-p", "--shape-predictor", required=True, help="path to facial landmark predictor")
@@ -66,7 +85,7 @@ if __name__ == '__main__':
     font = pygame.font.Font(None, 36)
 
     import cutscene_0
-    # play(cutscene_0.S0(screen)) # TODO: fix cutscene scale and zoom rate 
+    cutscene_play(cutscene_0.S0(screen)) # TODO: fix cutscene scale and zoom rate
 
     import level_0
     # play(level_0.L0(screen))
