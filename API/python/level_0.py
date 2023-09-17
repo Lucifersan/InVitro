@@ -138,7 +138,7 @@ class L0(scene.Scene):
             if isinstance(sprite, sprites.CollidableSprite):
                 sprite.push(self.sprites[0])
         # pulse the paintbrush
-        self.sprites[-3].rect.y = params.SCREEN_HEIGHT - 700 + 30 * math.sin(self.ticks / 40)
+        self.sprites[-2].rect.y = params.SCREEN_HEIGHT - 700 + 30 * math.sin(self.ticks / 40)
         self.backgrounds[self.background_index].update(self.state, blink_data, screen_gaze)
         super().tick(blink_data, screen_gaze)
 
