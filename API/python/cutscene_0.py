@@ -23,11 +23,12 @@ class S0(scene.Scene):
                             sprites.frame_load_helper("bush", ["real", "dream"], [""], "background"), "real", "")]
 
         # Get soundtracks
-        self.soundtracks = []
+        self.soundtracks = ["music/New_Recording_1383.mp3"]
 
 
     def __init__(self, screen):
         self.load_assets()
+        self.update_music(0, 1, 100)
         super().__init__(screen)
         self.show = {"real" : {sprite : False for sprite in self.sprites},
                      "dream" : {sprite : False for sprite in self.sprites}}
@@ -95,6 +96,10 @@ class S0(scene.Scene):
             self.show["real"][self.sprites[7]] = True
             self.show["real"][self.sprites[6]] = False
         elif self.ticks >= 1000 and self.ticks < 1250:
+            self.show["real"][self.sprites[8]] = True
+            self.show["real"][self.sprites[7]] = False
+            self.scaling["real"][self.sprites[8]] = 1 + ((1250 - self.ticks) / 400) ** 2
+        elif self.ticks >= 1250 and self.ticks < 1500:
             self.show["real"][self.sprites[8]] = True
             self.show["real"][self.sprites[7]] = False
             self.scaling["real"][self.sprites[8]] = 1 + ((1250 - self.ticks) / 400) ** 2
