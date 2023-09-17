@@ -37,7 +37,7 @@ def play(level):
                     pygame.quit()
                     sys.exit()
         level.screen.fill((255,255,255))
-        level.tick(eye.pull_blink_state(), gaze_info_wrapper(level))
+        level.tick(eye.pull_blink_state(), gaze_info_wrapper(level), level.state)
         pygame.display.flip()
         if level.is_done():
             running = False
@@ -66,10 +66,10 @@ if __name__ == '__main__':
     font = pygame.font.Font(None, 36)
 
     import cutscene_0
-    play(cutscene_0.S0(screen)) # TODO: fix cutscene scale and zoom rate 
+    # play(cutscene_0.S0(screen)) # TODO: fix cutscene scale and zoom rate 
 
     import level_0
-    play(level_0.L0(screen))
+    # play(level_0.L0(screen))
 
     import level_1
     play(level_1.L1(screen))
