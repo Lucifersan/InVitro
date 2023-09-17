@@ -98,6 +98,7 @@ class Player(FlippableSprite):
         self.y_speed = 0
         self.jump_power = -20
         self.jumping = False
+        self.jump_start_tick = -100
         print("Made a player", self.last_direction)
     
     def get_image(self):
@@ -135,7 +136,7 @@ class Player(FlippableSprite):
 
         # Apply gravity
         if not (keys[pygame.K_SPACE] and self.jumping and self.scene.ticks - self.jump_start_tick < 10):
-            self.y_speed += 1
+            self.y_speed += 2
 
         # Update position
         self.rect.x += self.x_speed
@@ -146,10 +147,10 @@ class Player(FlippableSprite):
             self.jumping = False
             self.rect.y = min(self.rect.y, params.SCREEN_HEIGHT - self.rect.height)
 
-        if self.jumping:
+        if self.jumping and self.scene.ticks - self.jump_start_tick >= 10:
             self.flip_obj_state("jump")
         else:
-            if self.x_speed == 0 and self.y_speed == 0:
+            if self.x_speed <= 2:
                 self.flip_obj_state("still")
             else:
                 self.flip_obj_state("walk")
@@ -220,7 +221,7 @@ class CollidableSprite(FlippableSprite):
                         self.rectify_x(sprite)
     
 class EyeMovableSprite(CollidableSprite):
-    def __init__(self, name, scene, frames, world_state, obj_state, x, y, start_coords, finish_coords, eye_focus, ticks_to_complete = 200, distance_threshold = 90000, tick_delay = 5):
+    def __init__(self, name, scene, frames, world_state, obj_state, x, y, start_coords, finish_coords, eye_focus, ticks_to_complete = 200, distance_threshold = 90000, reverse = False, tick_delay = 5):
         super().__init__(name, scene, frames, world_state, obj_state, x, y, tick_delay)
         self.start_coords = start_coords
         self.finish_coords = finish_coords
@@ -228,6 +229,7 @@ class EyeMovableSprite(CollidableSprite):
         self.ticks_to_complete = ticks_to_complete
         self.distance_threshold = distance_threshold
         self.counter = 0
+        self.reverse = reverse
     
     def distance_squared_to_gaze(self, screen_gaze):
         dx = self.rect.x + self.eye_focus[0] - screen_gaze[0]
@@ -235,7 +237,7 @@ class EyeMovableSprite(CollidableSprite):
         return dx * dx + dy * dy
 
     def update(self, flip, blink_data, screen_gaze):
-        if screen_gaze is not None and (self.distance_squared_to_gaze(screen_gaze) < self.distance_threshold):
+        if screen_gaze is not None and ((self.distance_squared_to_gaze(screen_gaze) < self.distance_threshold) ^ self.reverse):
             self.counter += 1
         else:
             self.counter -= 4

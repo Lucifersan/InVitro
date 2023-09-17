@@ -1,6 +1,11 @@
 import pygame
 import params
 
+def make_zoomed(image, scale = 1):
+    image_center = image.get_rect().center
+    scaled_image = pygame.transform.scale_by(image, scale)
+    return scaled_image
+
 class Scene:
     """
     bacon.
@@ -29,6 +34,12 @@ class Scene:
         self.show = {"real" : {sprite : 0 for sprite in self.sprites},
                      "dream" : {sprite : 0 for sprite in self.sprites}}
         
+        self.scaling = {"real" : {sprite : 1 for sprite in self.sprites},
+                     "dream" : {sprite : 1 for sprite in self.sprites}}
+        
+        # parallax effects
+        self.parallax = {sprite : 1.0 for sprite in self.sprites}
+        
         # Blink status default to closed
         self.cur_eye_state = False
 
@@ -50,10 +61,12 @@ class Scene:
         pygame.mixer.music.play()
 
     def burst(self) -> None:
-        self.screen.blit(self.backgrounds[self.background_index].get_image(), (-self.camera_x, -self.camera_y))
-        for sprite in self.sprites:
+        self.screen.blit(self.backgrounds[self.background_index].get_image(), (0,0))
+        for sprite in reversed(self.sprites):
             if self.show[self.state][sprite]:
-                self.screen.blit(sprite.get_image(), sprite.rect.move(-self.camera_x, -self.camera_y))
+                self.screen.blit(make_zoomed(sprite.get_image(), self.scaling[self.state][sprite]), 
+                    sprite.rect.move(-self.camera_x * self.parallax[sprite] - (self.scaling[self.state][sprite] - 1) / 2 * sprite.get_image().get_width(), 
+                                     -self.camera_y * self.parallax[sprite] - (self.scaling[self.state][sprite] - 1) / 2 * sprite.get_image().get_height()))
         # if self.screen_gaze is not None:
         #     pygame.draw.circle(self.screen, (0, 200, 0), (self.screen_gaze[0] - self.camera_x, self.screen_gaze[1] - self.camera_y), 300)
                 

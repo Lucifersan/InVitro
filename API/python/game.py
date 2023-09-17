@@ -38,6 +38,8 @@ def play(level):
         level.screen.fill((255,255,255))
         level.tick(eye.pull_blink_state(), gaze_info_wrapper(level))
         pygame.display.flip()
+        if level.is_done():
+            running = False
         clock.tick(60)
 
 if __name__ == '__main__':
@@ -62,7 +64,11 @@ if __name__ == '__main__':
     # Initialize the Pygame font module
     font = pygame.font.Font(None, 36)
 
+    import cutscene_0
+    play(cutscene_0.S0(screen))
+
     import level_0
     play(level_0.L0(screen))
+
     pygame.quit()
     sys.exit()
