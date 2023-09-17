@@ -1,5 +1,6 @@
 import pygame
 import params
+import time
 
 def make_zoomed(image, scale = 1):
     image_center = image.get_rect().center
@@ -46,8 +47,19 @@ class Scene:
         # Last tick on which blink information changed
         self.last_tick_change = 0
 
+        # will hold the start time for when eyes are first closed at any instant
+        self.eyes_closed_start = 0
+
+        # Duration of time eyes have been closed for
+        self.eyes_closed_duration = 0
+
+        # list of possible states (easily iterate through using += 1 and mod 2)
+        self.possible_states = ["real", "dream"]
+
         # real or dream?
-        self.state = "real"
+        self.state_index = 0
+        self.state = "real" # self.possible_states[0]
+
 
     def update_music(self, index, volume, fade_time):
         """
@@ -83,6 +95,15 @@ class Scene:
         """
         if blink_data != self.cur_eye_state:
             self.last_tick_change = self.ticks
+            if blink_data == False: # initialize blink, restart timer at 0
+                self.eyes_closed_start = time.time()
+                self.eyes_closed_duration = 0
+        else:
+            if blink_data == False: # eyes have stayed closed
+                self.eyes_closed_duration = time.time() - self.eyes_closed_start
+                if self.eyes_closed_duration >= 5: # eyes closed for 5 seconds
+                    self.state_index = (self.state_index + 1) % 2 # switch to a different state (only 2)
+                    self.state = self.possible_states[self.state_index]
         self.cur_eye_state = blink_data
 
     def give_gaze(self, screen_gaze) -> None:

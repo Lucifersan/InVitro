@@ -109,7 +109,7 @@ class Player(FlippableSprite):
         super().__init__(name, scene, frames, world_state, obj_state, x, y, tick_delay)
         self.x_speed = 0
         self.y_speed = 0
-        self.jump_power = -20
+        self.jump_power = -30
         self.jumping = False
         self.jump_start_tick = -100
         print("Made a player", self.last_direction)
@@ -133,10 +133,10 @@ class Player(FlippableSprite):
         # Handle movement
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            self.x_speed = -5
+            self.x_speed = -12
             self.last_direction = "left"  # Update last direction to left
         elif keys[pygame.K_RIGHT]:
-            self.x_speed = 5
+            self.x_speed = 12
             self.last_direction = "right"  # Update last direction to right
         else:
             self.x_speed = 0
