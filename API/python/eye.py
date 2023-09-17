@@ -65,7 +65,7 @@ def get_eye_state(frame, gray, detector, predictor, lStart, lEnd, rStart, rEnd):
         rightEAR = eye_aspect_ratio(rightEye)
 
         ear = (leftEAR + rightEAR) / 2.0
-        return ear > params.EYE_AR_THRESH
+        return ear > params.EYE_AR_THRESH # True if eyes OPEN
 
 eye_reading_queue = [True for _ in range(params.BLINK_SMOOTHING)]
 

@@ -65,7 +65,7 @@ if __name__ == '__main__':
     font = pygame.font.Font(None, 36)
 
     import cutscene_0
-    play(cutscene_0.S0(screen))
+    play(cutscene_0.S0(screen)) # TODO: fix cutscene scale and zoom rate 
 
     import level_0
     play(level_0.L0(screen))
