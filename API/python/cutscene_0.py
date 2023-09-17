@@ -23,7 +23,7 @@ class S0(scene.Scene):
                             sprites.frame_load_helper("bush", ["real", "dream"], [""], "background"), "real", "")]
 
         # Get soundtracks
-        self.soundtracks = ["music/New_Recording_1383.mp3"]
+        self.soundtracks = ["music/cutscene0.mp3"]
 
 
     def __init__(self, screen):

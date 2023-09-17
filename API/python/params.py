@@ -11,7 +11,7 @@ CAMERA_THRESHOLD = 0.1
 BACKGROUND_TRANSITION_TIME = 30
 
 # EAR measurement; anything less is closed, above is open
-EYE_AR_THRESH = 0.27
+EYE_AR_THRESH = 0.15
 
 # A blink needs to be of this length or shorter
 BLINK_FRAME_THRESHOLD = 5
