@@ -70,5 +70,8 @@ if __name__ == '__main__':
     import level_0
     play(level_0.L0(screen))
 
+    import level_1
+    play(level_1.L1(screen))
+
     pygame.quit()
     sys.exit()
