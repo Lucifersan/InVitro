@@ -37,7 +37,7 @@ class L0(scene.Scene):
                             sprites.frame_load_helper("eyemovable", ["real", "dream"], [""]), "real", "", x = 3700, y = params.SCREEN_HEIGHT - 200, 
                                 start_coords=(3700, params.SCREEN_HEIGHT - 50), finish_coords=(3700, params.SCREEN_HEIGHT - 450), reverse=True, eye_focus=(150, 150)),
                         sprites.CollidableSprite("stationary", self,
-                            sprites.frame_load_helper("stationary", ["real", "dream"], [""]), "real", "", x = 4100, y = params.SCREEN_HEIGHT - 500),
+                            sprites.frame_load_helper("stationary", ["real", "dream"], [""]), "real", "", x = 4050, y = params.SCREEN_HEIGHT - 500),
                         sprites.FlippableSprite("bush", self,
                             sprites.frame_load_helper("bush", ["real", "dream"], [""], scaling = 4), "real", "", x=0, y = params.SCREEN_HEIGHT - 100, animate_on_sight = True),
                         sprites.FlippableSprite("bush", self,
@@ -59,7 +59,13 @@ class L0(scene.Scene):
                         sprites.FlippableSprite("paintbrush", self,
                             sprites.frame_load_helper("paintbrush", ["real", "dream"], [""]), "real", "", x=4200, y = params.SCREEN_HEIGHT - 600), 
                         sprites.FlippableSprite("clouds", self,
-                            sprites.frame_load_helper("clouds", ["real", "dream"], [""], scaling=6), "real", "", x = 800, y = 0)
+                            sprites.frame_load_helper("clouds", ["real", "dream"], [""], scaling=6), "real", "", x = 800, y = 0),
+                        sprites.FlippableSprite("runningtext1", self,
+                            sprites.frame_load_helper("runningtext1", ["real", "dream"], [""], scaling=.2), "dream", "", x = 300, y = 50),
+                        sprites.FlippableSprite("runningtext2", self,
+                            sprites.frame_load_helper("runningtext2", ["real", "dream"], [""], scaling=.2), "dream", "", x = 500, y = 50),
+                        sprites.FlippableSprite("runningtext3", self,
+                            sprites.frame_load_helper("runningtext3", ["real", "dream"], [""], scaling=.2), "dream", "", x = 100, y = 50)
                         ]
         
         self.eye_open = pygame.image.load("images/seen.png")

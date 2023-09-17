@@ -31,9 +31,10 @@ def play(level):
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q:
+                if event.key == pygame.K_q: # hit q to close pygame
                     running = False
                     # q_in.put('STOP')
+                    pygame.quit()
                     sys.exit()
         level.screen.fill((255,255,255))
         level.tick(eye.pull_blink_state(), gaze_info_wrapper(level))

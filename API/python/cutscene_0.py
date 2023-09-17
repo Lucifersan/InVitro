@@ -16,7 +16,8 @@ class S0(scene.Scene):
 
         self.sprites = [sprites.FlippableSprite("s0_{0}".format(i), self, 
                             sprites.frame_load_helper("s0_{0}".format(i), ["real", "dream"], [""], "background"), "real", "")
-                                for i in range(9)]
+                                for i in range(10)]
+    
 
         # Get background images
         self.backgrounds = [sprites.FlippableSprite("bush", self,
@@ -95,14 +96,19 @@ class S0(scene.Scene):
         elif self.ticks >= 900 and self.ticks < 1000:
             self.show["real"][self.sprites[7]] = True
             self.show["real"][self.sprites[6]] = False
-        elif self.ticks >= 1000 and self.ticks < 1250:
+        elif self.ticks >= 1000 and self.ticks < 1100:
             self.show["real"][self.sprites[8]] = True
             self.show["real"][self.sprites[7]] = False
             self.scaling["real"][self.sprites[8]] = 1 + ((1250 - self.ticks) / 400) ** 2
-        elif self.ticks >= 1250 and self.ticks < 1500:
+        elif self.ticks >= 1100 and self.ticks < 1200:
             self.show["real"][self.sprites[8]] = True
             self.show["real"][self.sprites[7]] = False
             self.scaling["real"][self.sprites[8]] = 1 + ((1250 - self.ticks) / 400) ** 2
+        elif self.ticks >= 1200 and self.ticks < 1300:
+            self.show["real"][self.sprites[9]] = True
+            self.show["real"][self.sprites[8]] = False
+            self.scaling["real"][self.sprites[9]] = 1 + ((1250 - self.ticks) / 400) ** 2
+
 
         # example fade in effect
         self.color = (255, 255, 255)
@@ -118,6 +124,6 @@ class S0(scene.Scene):
         To be overridden.
         Returns if this Scene has completed.
         """
-        return self.ticks >= 1250
+        return self.ticks >= 1400
         pass
 

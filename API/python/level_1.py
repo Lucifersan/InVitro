@@ -58,8 +58,10 @@ class L1(scene.Scene):
                             sprites.frame_load_helper("floor", ["real", "dream"], [""]), "real", "", x=5760, y=params.SCREEN_HEIGHT - 8),
                         sprites.FlippableSprite("paintbrush", self,
                             sprites.frame_load_helper("paintbrush", ["real", "dream"], [""]), "real", "", x=4200, y = params.SCREEN_HEIGHT - 600), 
+                        sprites.CollidableSprite("stone", self,
+                            sprites.frame_load_helper("stone", ["real", "dream"], [""], scaling =10), "real", "", x = 1200, y = params.SCREEN_HEIGHT - 180),
                         sprites.FlippableSprite("clouds", self,
-                            sprites.frame_load_helper("clouds", ["real", "dream"], [""], scaling=6), "real", "", x = 800, y = 0)
+                            sprites.frame_load_helper("clouds", ["real", "dream"], [""], scaling=6), "real", "", x = 800, y = 0),
                         ]
         
         self.eye_open = pygame.image.load("images/seen.png")
